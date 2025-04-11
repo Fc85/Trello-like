@@ -1,8 +1,7 @@
 @import "tailwindcss";
 
 body {
-  @apply bg-gray-400;
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-gray-300;
 }
 
 .layout-nav {
@@ -19,4 +18,44 @@ body {
       @apply text-red-300 cursor-pointer;
     }
   }
+}
+
+.component-button {
+  @apply bg-white border rounded-lg px-2 py-1 cursor-pointer border-black;
+
+  &:hover {
+    @apply bg-black text-white;
+  }
+}
+
+.home-container {
+  @apply px-[10%];
+}
+
+.home-title {
+  @apply text-7xl font-bold text-center py-[100px];
+}
+
+.projects-list-header {
+  @apply flex justify-between items-center mb-[20px];
+
+  h2 {
+    @apply text-3xl;
+  }
+}
+
+.projects-list {
+  @apply grid grid-cols-3 gap-5 mt-[20px];
+}
+
+.project-card-container {
+  @apply border-1 border-black rounded-2xl p-[20px] bg-white;
+
+  button {
+    @apply float-right mt-[20px];
+  }
+}
+
+.project-card-header {
+  @apply flex justify-between items-center mb-[20px];
 }
