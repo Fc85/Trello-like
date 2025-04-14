@@ -12,15 +12,19 @@ export default function Home() {
   const [projectsList, setProjectsList] = useState<Project[]>()
 
   useEffect(()=> {
+    updateList()
+  },[])
+
+  const updateList = ():void => {
     const fromLS = window.localStorage.getItem('projects')
     const parsed = fromLS ? JSON.parse(fromLS) : []
 
     setProjectsList(parsed)
-  },[])
+  }
 
   return (
     <div className="home-container">
-      {isProjectModalOpen && createPortal(<CreateEditModal close={()=>setIsProjectModalOpen(false)} />, document.body)}
+      {isProjectModalOpen && createPortal(<CreateEditModal close={()=>setIsProjectModalOpen(false)} updateList={updateList} />, document.body)}
       <h1 className="home-title">Accueil</h1>
       <section>
         <div className="projects-list-header">
@@ -29,7 +33,7 @@ export default function Home() {
         </div>
         <hr/>
         <div className="projects-list">
-          {projectsList?.map((item)=><ProjectCard key={item._id} {...item} />)}
+          {projectsList?.map((item)=><ProjectCard key={item._id} updateList={updateList} project={{...item}} />)}
         </div>
       </section>
     </div>

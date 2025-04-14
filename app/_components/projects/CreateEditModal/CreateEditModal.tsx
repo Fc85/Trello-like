@@ -4,9 +4,9 @@ import {X as Close} from 'lucide-react'
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
-export default function CreateEditModal (data: {close: () => void, project?: Project} ) {
-  const [name, setName] = useState<string>('')
-  const [description, setDescription] = useState<string>('')
+export default function CreateEditModal (data: {close: () => void, project?: Project,  updateList: () => void } ) {
+  const [name, setName] = useState<string>(data?.project?.name || '')
+  const [description, setDescription] = useState<string>(data?.project?.description || '')
 
   const closeModal = ():void => {
     setName('')
@@ -18,18 +18,33 @@ export default function CreateEditModal (data: {close: () => void, project?: Pro
     if(name && description){
       const projectsList: string = window.localStorage.getItem('projects') || ''
       const formattedProjectsList: Project[] = projectsList ? JSON.parse(projectsList) : []
-      const newProject: Project = {
-        _id: uuidv4(),
-        name,
-        description,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
 
-      formattedProjectsList.push(newProject)
-      
+      if(!data?.project?._id){
+        const newProject: Project = {
+          _id: uuidv4(),
+          name,
+          description,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+
+        formattedProjectsList.push(newProject)
+      }else{
+        const projectIndex = formattedProjectsList.findIndex((item)=>item._id === data?.project?._id)
+
+        if(projectIndex !== -1){
+          formattedProjectsList[projectIndex] = {
+            ...formattedProjectsList[projectIndex],
+            name,
+            description,
+            updatedAt: new Date()
+          }
+        }
+      }
+        
       window.localStorage.setItem('projects', JSON.stringify(formattedProjectsList))
       closeModal()
+      data.updateList()
     }
   }
   
