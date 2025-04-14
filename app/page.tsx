@@ -33,7 +33,16 @@ export default function Home() {
         </div>
         <hr/>
         <div className="projects-list">
-          {projectsList?.map((item)=><ProjectCard key={item._id} updateList={updateList} project={{...item}} />)}
+          {projectsList?.sort((a: Project, b: Project) => {
+            if(a.starred && b.starred){
+              return a.name > b.name ? 1 : -1
+            }
+            if(a.starred || b.starred){
+              return (a.starred || false) < (b.starred || false) ? 1 : -1
+            }
+            return a.name > b.name ? 1 : -1
+
+          })?.map((item: Project)=><ProjectCard key={item._id} updateList={updateList} project={{...item}} />)}
         </div>
       </section>
     </div>
