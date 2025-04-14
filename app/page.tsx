@@ -3,21 +3,20 @@
 import { Project } from "@/dataSchemas";
 import { ProjectCard } from "./_components/projects";
 import { Button } from "../components/ui"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import CreateEditModal from "./_components/projects/CreateEditModal";
 
-const dummy: Project ={
-  _id: 'exampleId',
-  name: 'Nom du projet',
-  description: "Description du projet",
-  createdAt: new Date(),
-  updatedAt: new Date,
-}
-
-
 export default function Home() {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState<boolean>(false)
+  const [projectsList, setProjectsList] = useState<Project[]>()
+
+  useEffect(()=> {
+    const fromLS = window.localStorage.getItem('projects')
+    const parsed = fromLS ? JSON.parse(fromLS) : []
+
+    setProjectsList(parsed)
+  },[])
 
   return (
     <div className="home-container">
@@ -30,7 +29,7 @@ export default function Home() {
         </div>
         <hr/>
         <div className="projects-list">
-          <ProjectCard {...dummy} />
+          {projectsList?.map((item)=><ProjectCard key={item._id} {...item} />)}
         </div>
       </section>
     </div>
