@@ -23,16 +23,16 @@ export default function Home() {
   }
 
   return (
-    <div className="home-container">
+    <div className="px-[10%]">
       {isProjectModalOpen && createPortal(<CreateEditModal close={()=>setIsProjectModalOpen(false)} updateList={updateList} />, document.body)}
-      <h1 className="home-title">Accueil</h1>
+      <h1 className="text-7xl font-bold text-center py-[100px]">Accueil</h1>
       <section>
-        <div className="projects-list-header">
-          <h2>Liste des projets</h2>
+        <div className="flex justify-between items-center mb-[20px]">
+          <h2 className="text-3xl">Liste des projets</h2>
           <Button onClick={()=>setIsProjectModalOpen(true)}>Nouveau projet</Button>
         </div>
         <hr/>
-        <div className="projects-list">
+        <div className="grid grid-cols-3 gap-5 mt-[20px]">
           {projectsList?.sort((a: Project, b: Project) => {
             if(a.starred && b.starred){
               return a.name > b.name ? 1 : -1

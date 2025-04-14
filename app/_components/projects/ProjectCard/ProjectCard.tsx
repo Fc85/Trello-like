@@ -4,6 +4,7 @@ import { Button } from "../../../../components/ui";
 import { useState } from "react";
 import CreateEditModal from "../CreateEditModal";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 
 
 export default function ProjectCard (data: {project: Project, updateList: ()=>void}) {
@@ -36,18 +37,18 @@ export default function ProjectCard (data: {project: Project, updateList: ()=>vo
   }
   
   return (
-    <span className="project-card-container">
+    <span className="border-1 border-black rounded-2xl p-[20px] bg-white">
       {isProjectModalOpen.isOpen && createPortal(<CreateEditModal close={()=>setIsProjectModalOpen({isOpen:false})} updateList={data.updateList}  {...(isProjectModalOpen.isOpen ? {project: isProjectModalOpen.project} : {})} />, document.body)}
-      <span className="project-card-header">
+      <span className="flex justify-between items-center mb-[20px]">
         {data.project.name}
         <Star cursor='pointer' width={20} height={20} fill={data.project.starred ? "gold" : "none"} onClick={()=>toggleStarred()} />
       </span>
         <p>{data.project.description}</p>
-        <Button>Accéder</Button>
-        <Button className="mr-3" onClick={()=>setIsProjectModalOpen({isOpen: true, project: data.project})}>
+        <Link href={`/${data.project._id}`}><Button className="float-right mt-[20px]">Accéder</Button></Link>
+        <Button className="mr-3 float-right mt-[20px]" onClick={()=>setIsProjectModalOpen({isOpen: true, project: data.project})}>
           <Edit/>
         </Button>
-        <Button className="mr-3">
+        <Button className="mr-3 float-right mt-[20px]">
           <Delete onClick={()=>deleteProject()}/>
         </Button>
     </span>
