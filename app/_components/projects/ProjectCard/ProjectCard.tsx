@@ -8,6 +8,19 @@ import { createPortal } from "react-dom";
 
 export default function ProjectCard (data: {project: Project, updateList: ()=>void}) {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState<{isOpen: boolean, project?: Project}>({isOpen: false})
+
+  const deleteProject = (): void => {
+    const fromLS = window.localStorage.getItem('projects') || ''
+    const parsed = JSON.parse(fromLS)
+    const projectIndex = parsed.findIndex((item: Project)=>item._id === data.project._id)
+
+    if(projectIndex !== -1){
+      parsed.splice(projectIndex, 1)
+
+      window.localStorage.setItem('projects', JSON.stringify(parsed))
+      data.updateList()
+    }
+  }
   
   return (
     <span className="project-card-container">
@@ -22,7 +35,7 @@ export default function ProjectCard (data: {project: Project, updateList: ()=>vo
           <Edit/>
         </Button>
         <Button className="mr-3">
-          <Delete/>
+          <Delete onClick={()=>deleteProject()}/>
         </Button>
     </span>
   )

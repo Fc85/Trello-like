@@ -30,7 +30,7 @@ export default function CreateEditModal (data: {close: () => void, project?: Pro
 
         formattedProjectsList.push(newProject)
       }else{
-        const projectIndex = formattedProjectsList.findIndex((item)=>item._id === data?.project?._id)
+        const projectIndex = formattedProjectsList.findIndex((item: Project)=>item._id === data?.project?._id)
 
         if(projectIndex !== -1){
           formattedProjectsList[projectIndex] = {
