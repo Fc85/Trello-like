@@ -1,6 +1,6 @@
 'use client'
 
-import { Project } from "@/dataSchemas";
+import { Project } from "@/types";
 import { ProjectCard } from "./_components/projects";
 import { Button } from "../components/ui"
 import { useEffect, useState } from "react";
