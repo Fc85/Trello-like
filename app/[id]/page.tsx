@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui";
 import { Project } from "@/types";
 import { useState, useEffect } from "react";
-import { Column } from "../_components/columns";
+import { Column } from "../_components/project";
 
 export default function Projet({params}: {params: {id: string}}) {
   const {id} = params

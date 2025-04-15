@@ -1,11 +1,11 @@
 'use client'
 
 import { Project } from "@/types";
-import { ProjectCard } from "./_components/projects";
+import { ProjectCard } from "./_components/home";
 import { Button } from "../components/ui"
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import CreateEditModal from "./_components/projects/CreateEditModal";
+import CreateEditModal from "./_components/home/CreateEditModal";
 
 export default function Home() {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState<boolean>(false)
