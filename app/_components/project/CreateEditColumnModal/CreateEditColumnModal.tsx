@@ -1,22 +1,53 @@
 import { Button } from "@/components/ui";
-import { Project } from "@/types";
+import { Column, Project } from "@/types";
 import {X as Close} from 'lucide-react'
 import { useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
 import { SketchPicker } from 'react-color';
 
-export default function CreateEditColumnModal ({close, project, columnId, updateList}: {close: () => void, project?: Project, columnId?: string,  updateList: () => void } ) {
+export default function CreateEditColumnModal ({close, project, columnId, updateList}: {close: () => void, project: Project, columnId?: string,  updateList: () => void } ) {
   const [name, setName] = useState<string>('')
   const [description, setDescription] = useState<string>('')
-  const [color, setColor] = useState<string>('#e5e5e5')
+  const [color, setColor] = useState<string>('')
   const [isColorPickerOpen, setIsColorPickerOpen] = useState<boolean>(false)
 
   const closeModal = ():void => {
     setName('')
     setDescription('')
+    setColor('')
+    setIsColorPickerOpen(false)
     close()
   }
  
   const handleSubmit = (): void => {
+      if(name && description && project._id){
+        const columnsList: string = window.localStorage.getItem('columns') || ''
+        const projectsList: string = window.localStorage.getItem('projects') || ''
+        const parsedColumnsList: Column[] = columnsList ? JSON.parse(columnsList) : []
+        const parsedProjectsList: Project[] = projectsList ? JSON.parse(projectsList) : []
+        const projectIndex: number = parsedProjectsList.findIndex((item: Project)=>item._id === project._id)
+
+        const newColumn: Column = {
+                  _id: uuidv4(),
+                  name,
+                  description,
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                  ...(color ? {color} : {})
+        }
+
+        parsedColumnsList.push(newColumn)
+
+        if(projectIndex !== -1){
+          parsedProjectsList[projectIndex].columns = [ ...(parsedProjectsList[projectIndex].columns || []), newColumn._id]
+
+          window.localStorage.setItem('columns', JSON.stringify(parsedColumnsList))
+          window.localStorage.setItem('projects', JSON.stringify(parsedProjectsList))
+
+          closeModal()
+          updateList()
+        }
+      }
   }
   
   return (
