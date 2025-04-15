@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui"
 import { Column as ColumnType } from "@/types"
 import { Pencil as Edit, Trash2 as Delete, Move } from 'lucide-react';
+import Task from "../Task/Task";
 
 const dummy: ColumnType = {
   _id: 'a',
@@ -15,7 +16,7 @@ const dummy: ColumnType = {
 export default function Column () {
   
   return (
-    <div style={{backgroundColor: dummy?.color ? dummy.color : '#e5e5e5'}} className="border-1 border-black rounded-2xl p-[20px]">
+    <div style={{backgroundColor: dummy?.color ? dummy.color : '#e5e5e5'}} className="border-1 border-black rounded-2xl p-[20px] w-[350px] min-w-[350px]">
       <span className="flex justify-between">
         <h3 className="text-lg font-semibold">{dummy?.name}</h3>
         <div className="flex gap-1 min-w-fit h-fit">
@@ -27,6 +28,9 @@ export default function Column () {
       <p>{dummy?.description}</p>
       <hr className="my-2" />
       <h4 className="font-semibold">Tâches</h4>
+      <Task/>
+      <Task/>
+      <Task/>
     </div>
   )
 }

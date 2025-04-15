@@ -30,7 +30,12 @@ export default function Projet({params}: {params: {id: string}}) {
           <Button>Nouvelle colonne</Button>
         </div>
       </div>
-      <div className="px-[10%] grid grid-cols-3 gap-5 mt-[20px]">
+      <div className="mx-auto w-[80%] flex gap-5 mt-[20px] overflow-hidden overflow-x-auto pb-5">
+        <Column/>
+        <Column/>
+        <Column/>
+        <Column/>
+        <Column/>
         <Column/>
       </div>
     </div>
