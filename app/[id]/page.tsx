@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui";
 import { Project, Column as ColumnType } from "@/types";
 import { useState, useEffect } from "react";
-import { Column, CreateEditColumnModal } from "../_components/project";
+import { Column, CreateEditModal } from "../_components/project";
 import { createPortal } from "react-dom";
 import { getOneProject } from "../db";
 
@@ -13,7 +13,7 @@ export default function Projet({params}: {params: {id: string}}) {
   const [isColumnModalOpen, setIsColumnModalOpen] = useState<boolean>(false)
 
   const updateList = ():void => {
-    const newProjectData = getOneProject(id, {populateColumns: true})
+    const newProjectData = getOneProject(id, {populateColumns: true}, {populateTasks: true})
     setProjectData(newProjectData)
   }
 
@@ -23,7 +23,7 @@ export default function Projet({params}: {params: {id: string}}) {
   
   return (
     <div>
-      {isColumnModalOpen && createPortal(<CreateEditColumnModal projectId={id} close={()=>setIsColumnModalOpen(false)} updateList={updateList} />, document.body)}
+      {isColumnModalOpen && createPortal(<CreateEditModal type='COLUMN' parentId={id} close={()=>setIsColumnModalOpen(false)} updateList={updateList} />, document.body)}
       <div className="w-full bg-white flex justify-between px-[10%] py-5 items-end">
         <div className="w-auto" >
           <h2 className="text-xl font-bold">{projectData?.name}</h2>

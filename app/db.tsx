@@ -3,25 +3,25 @@ import { v4 as uuidv4 } from 'uuid';
 
 export function getProjects(): Project[] {
   const fromLS: string = window.localStorage.getItem('projects') || ''
-  const parsed: Project[] = JSON.parse(fromLS) || []
+  const parsed: Project[] = fromLS ? JSON.parse(fromLS) : []
 
   return parsed
 }
 
-export function getOneProject<T extends {populateColumns: boolean} = {populateColumns: false}>(id: string, options?: T): Project<T> | null {
+export function getOneProject<TP extends {populateColumns: boolean} = {populateColumns: false}, TC extends {populateTasks: boolean} = {populateTasks: false}>(id: string, projectOptions?: TP, columnOptions?: TC): Project<TP> | null {
   const projectsList = getProjects()
   const matchingProject: Project | undefined = projectsList.find((item: Project)=>item._id === id)
 
   if(matchingProject){
-    if(options?.populateColumns){
-      const columns = getColumns()
-      const filteredColumns = columns.filter((item:Column)=> matchingProject.columns?.includes(item._id))
-      const newProjectData: Project<T> = {...matchingProject, columns: filteredColumns} as Project<T>
-
+    if(projectOptions?.populateColumns){
+      const columns = getColumns(columnOptions)
+      const filteredColumns = columns.filter((item:Column<TC>)=> matchingProject.columns?.includes(item._id))
+      const newProjectData: Project<TP> = {...matchingProject, columns: filteredColumns} as Project<TP>
+      
       return newProjectData
     }
 
-    return matchingProject as  Project<T>
+    return matchingProject as  Project<TP>
   }
   return null
 }
@@ -78,11 +78,12 @@ export function deleteProject(id:string, onFinish: ()=>void = () => {}) {
   const projectIndex: number = projectsList.findIndex((item: Project)=>item._id === id)
   
   if(projectIndex !== -1){
-    if(projectsList[projectIndex].columns?.length){
-      for(let index = 0; index < projectsList[projectIndex].columns.length; index++){
-        deleteColumn(projectsList[projectIndex].columns[index])
-      }
-    }
+    // if(projectsList[projectIndex].columns?.length){
+    //   for(let index = 0; index < projectsList[projectIndex].columns.length; index++){
+    //     deleteColumn(projectsList[projectIndex].columns[index])
+    //   }
+    // }
+    // TODO: Supprimer les colonnes et tâches liées à ce projet
 
     projectsList.splice(projectIndex, 1)
 
@@ -91,15 +92,29 @@ export function deleteProject(id:string, onFinish: ()=>void = () => {}) {
   }
 }
 
-export function getColumns(): Column[] {
+export function getColumns<T extends {populateTasks: boolean} = {populateTasks: false}>(options?: T): Column<T>[] {
   const fromLS: string = window.localStorage.getItem('columns') || ''
-  const parsed: Column[] = JSON.parse(fromLS) || []
+  const  parsed: Column[] = fromLS ? JSON.parse(fromLS) : []
 
-  return parsed
+  if(options?.populateTasks){
+    const tasks = getTasks()
+  
+    return parsed.map((col: Column)=> {
+      const filteredTasks = tasks.filter((item:Task)=> col.tasks?.includes(item._id))
+      const newColumnData: Column<T> = {...col, tasks: filteredTasks} as Column<T>
+
+      return newColumnData
+    })
+  }
+
+  return parsed as Column<T>[]
 }
 
-export function getOneColumn() {
+export function getOneColumn(id: string) {
+  const columnsList = getColumns()
+  const matchingColumn: Column | undefined = columnsList.find((item: Project)=>item._id === id)
 
+  return matchingColumn || null
 }
 
 export function CreateColumn(projectId:string, data: {name:string, description:string, color?:string}, onFinish: ()=>void = ()=>{}) {
@@ -123,10 +138,9 @@ export function CreateColumn(projectId:string, data: {name:string, description:s
     
     editProject(projectId, {columns: newColumnsList}, ()=>onFinish())
   }
-
 }
 
-export function editColumn(columnId: string, data:{name?:string, description?:string, color?:string}, onFinish: ()=>void = ()=>{}) {
+export function editColumn(columnId: string, data:{name?:string, description?:string, color?:string, tasks?:string[]}, onFinish: ()=>void = ()=>{}) {
   const columnsList = getColumns()
   const columnIndex: number = columnsList.findIndex((item: Project)=>item._id === columnId)
 
@@ -136,6 +150,7 @@ export function editColumn(columnId: string, data:{name?:string, description?:st
       ...(data.name ? {name: data.name} : {}),
       ...(data.description ? {description: data.description} : {}),
       ...(data.color ? {color: data.color} : {}),
+      ...(data.tasks ? {tasks: data.tasks} : {}),
       updatedAt: new Date()
     }
 
@@ -144,23 +159,24 @@ export function editColumn(columnId: string, data:{name?:string, description?:st
   }
 }
 
-export function deleteColumn(columnId: string, onFinish: () => void = () => {}) {
+export function deleteColumn(projectId: string, columnId: string, onFinish: () => void = () => {}) {
   const columns = getColumns()
   const columnIndex: number = columns.findIndex((item:Column)=> item._id === columnId)
 
   
   if(columnIndex !== -1){
     columns.splice(columnIndex, 1)
+    // TODO: Supprimer les tâches liées à cette colonne
+    // TODO: Supprimer la colonne dans le projet
 
     window.localStorage.setItem('columns', JSON.stringify(columns))
     onFinish()
   }
-
 }
 
 export function getTasks(): Task[] {
   const fromLS: string = window.localStorage.getItem('tasks') || ''
-  const parsed: Task[] = JSON.parse(fromLS) || []
+  const parsed: Task[] = fromLS ? JSON.parse(fromLS) : []
 
   return parsed
 }
@@ -169,14 +185,53 @@ export function getOneTask() {
 
 }
 
-export function CreateTask() {
+export function CreateTask(columnId:string, data: {name:string, description:string, color?:string}, onFinish: ()=>void = ()=>{}) {
+  const columnsList = getTasks()
+  const column = getOneColumn(columnId)
 
+  if(column){
+    const newTask: Task = {
+      _id: uuidv4(),
+      name: data.name,
+      description: data.description,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      ...(data.color ? {color: data.color} : {})
+    }
+
+    columnsList.push(newTask)
+    window.localStorage.setItem('tasks', JSON.stringify(columnsList))
+
+    const newTasksList: string[] = [...(column.tasks || []), newTask._id]
+    
+    editColumn(columnId, {tasks: newTasksList}, ()=>onFinish())
+    onFinish()
+  }
 }
 
 export function editTask() {
 
 }
 
-export function deleteTask() {
+export function deleteTask(taskId: string, columnId: string, onFinish: () => void = () => {}) {
+  const tasks = getTasks()
+  const taskIndex: number = tasks.findIndex((item:Task)=> item._id === taskId)
 
+  if(taskIndex !== -1){
+    const columns = getColumns()
+    const columnIndex: number = columns.findIndex((item:Column)=> item._id === columnId)
+
+    if(columnIndex !== -1 && columns[columnIndex].tasks){
+      const taskPosition: number = columns[columnIndex].tasks.findIndex((item: string)=>item === taskId)
+
+      if(taskPosition !== -1){
+        columns[columnIndex].tasks?.splice(taskPosition, 1)
+        tasks.splice(taskIndex, 1)
+    
+        window.localStorage.setItem('columns', JSON.stringify(columns))
+        window.localStorage.setItem('tasks', JSON.stringify(tasks))
+        onFinish()
+      }
+    }
+  }
 }

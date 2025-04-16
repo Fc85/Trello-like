@@ -1,30 +1,21 @@
+import { deleteTask } from "@/app/db";
 import { Button } from "@/components/ui"
 import { Task as TaskType } from "@/types"
 import { Pencil as Edit, Trash2 as Delete, Move } from 'lucide-react';
 
-const dummy: TaskType = {
-  _id: 'a',
-  name: 'Nom de la tâche',
-  description: 'Description de la tâche',
-  color: 'lightblue',
-  deadline: new Date(),
-  createdAt: new Date(),
-  updatedAt: new Date(),
-}
-
-export default function Task () {
+export default function Task ({columnId, taskData, updateList}: {columnId: string, taskData: TaskType, updateList: ()=>void}) {
   
   return (
-    <div style={{backgroundColor: dummy?.color ? dummy.color : '#e5e5e5'}} className="border-1 border-black rounded-2xl p-[20px] mt-3">
+    <div style={{backgroundColor: taskData.color ? taskData.color : '#e5e5e5'}} className="border-1 border-black rounded-2xl p-[20px] mt-3">
       <span className="flex justify-between items-center mb-2">
-        <h3 className="text-m font-semibold">{dummy?.name}</h3>
+        <h3 className="text-m font-semibold">{taskData.name}</h3>
         <div className="flex gap-1 min-w-fit h-fit">
-          <Button><Delete width={20} height={20} /></Button>
+          <Button onClick={()=>deleteTask(taskData._id, columnId, ()=> updateList())}><Delete width={20} height={20} /></Button>
           <Button><Edit width={20} height={20} /></Button>
           <Button><Move  width={20} height={20}/></Button>
         </div>
       </span>
-      <p className="text-sm">{dummy?.description}</p>
+      <p className="text-sm">{taskData.description}</p>
     </div>
   )
 }
