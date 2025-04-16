@@ -9,9 +9,8 @@ export function getProjects(): Project[] {
 }
 
 export function getOneProject<T extends {populateColumns: boolean} = {populateColumns: false}>(id: string, options?: T): Project<T> | null {
-  const fromLS: string = window.localStorage.getItem('projects') || ''
-  const parsed: Project[] = JSON.parse(fromLS) || []
-  const matchingProject: Project | undefined = parsed.find((item: Project)=>item._id === id)
+  const projectsList = getProjects()
+  const matchingProject: Project | undefined = projectsList.find((item: Project)=>item._id === id)
 
   if(matchingProject){
     if(options?.populateColumns){
@@ -28,8 +27,7 @@ export function getOneProject<T extends {populateColumns: boolean} = {populateCo
 }
 
 export function CreateProject(data: {name:string, description:string}, onFinish: ()=>void = ()=>{}) {
-  const fromLS: string = window.localStorage.getItem('projects') || ''
-  const parsed: Project[] = JSON.parse(fromLS) || []
+  const projectsList = getProjects()
 
   const newProject: Project = {
     _id: uuidv4(),
@@ -39,59 +37,56 @@ export function CreateProject(data: {name:string, description:string}, onFinish:
     updatedAt: new Date()
   }
 
-  parsed.push(newProject)
-  window.localStorage.setItem('projects', JSON.stringify(parsed))
+  projectsList.push(newProject)
+  window.localStorage.setItem('projects', JSON.stringify(projectsList))
   onFinish()
 }
 
 export function editProject(id: string, data: {name?:string, description?:string, columns?:string[]} ,onFinish: ()=>void = ()=>{}) {
-  const fromLS: string = window.localStorage.getItem('projects') || ''
-  const parsed: Project[] = JSON.parse(fromLS) || []
-  const projectIndex: number = parsed.findIndex((item: Project)=>item._id === id)
+  const projectsList = getProjects()
+  const projectIndex: number = projectsList.findIndex((item: Project)=>item._id === id)
 
   if(projectIndex !== -1){
-    parsed[projectIndex] = {
-      ...parsed[projectIndex],
+    projectsList[projectIndex] = {
+      ...projectsList[projectIndex],
       ...(data.name ? {name: data.name} : {}),
       ...(data.description ? {description: data.description} : {}),
       ...(data.columns ? {columns: data.columns} : {}),
       updatedAt: new Date()
     }
 
-    window.localStorage.setItem('projects', JSON.stringify(parsed))
+    window.localStorage.setItem('projects', JSON.stringify(projectsList))
     onFinish()
   }
 }
 
 export function toggleStarredProject(id:string, onFinish: ()=>void = ()=>{}){
-  const fromLS: string = window.localStorage.getItem('projects') || ''
-  const parsed: Project[] = JSON.parse(fromLS)
-  const projectIndex: number = parsed.findIndex((item: Project)=>item._id === id)
+  const projectsList = getProjects()
+  const projectIndex: number = projectsList.findIndex((item: Project)=>item._id === id)
 
   if(projectIndex !== -1){
-    parsed[projectIndex].starred = !parsed[projectIndex].starred
+    projectsList[projectIndex].starred = !projectsList[projectIndex].starred
 
-    window.localStorage.setItem('projects', JSON.stringify(parsed))
+    window.localStorage.setItem('projects', JSON.stringify(projectsList))
     onFinish()
   }
 
 }
 
 export function deleteProject(id:string, onFinish: ()=>void = () => {}) {
-  const fromLS: string = window.localStorage.getItem('projects') || ''
-  const parsed: Project[] = JSON.parse(fromLS)
-  const projectIndex: number = parsed.findIndex((item: Project)=>item._id === id)
+  const projectsList = getProjects()
+  const projectIndex: number = projectsList.findIndex((item: Project)=>item._id === id)
   
   if(projectIndex !== -1){
-    if(parsed[projectIndex].columns?.length){
-      for(let index = 0; index < parsed[projectIndex].columns.length; index++){
-        deleteColumn(parsed[projectIndex].columns[index])
+    if(projectsList[projectIndex].columns?.length){
+      for(let index = 0; index < projectsList[projectIndex].columns.length; index++){
+        deleteColumn(projectsList[projectIndex].columns[index])
       }
     }
 
-    parsed.splice(projectIndex, 1)
+    projectsList.splice(projectIndex, 1)
 
-    window.localStorage.setItem('projects', JSON.stringify(parsed))
+    window.localStorage.setItem('projects', JSON.stringify(projectsList))
     onFinish()
   }
 }
@@ -108,8 +103,7 @@ export function getOneColumn() {
 }
 
 export function CreateColumn(projectId:string, data: {name:string, description:string, color?:string}, onFinish: ()=>void = ()=>{}) {
-  const fromLS: string = window.localStorage.getItem('columns') || ''
-  const parsed: Column[] = JSON.parse(fromLS)
+  const columnsList = getColumns()
   const project = getOneProject(projectId)
 
   if(project){
@@ -122,8 +116,8 @@ export function CreateColumn(projectId:string, data: {name:string, description:s
       ...(data.color ? {color: data.color} : {})
     }
 
-    parsed.push(newColumn)
-    window.localStorage.setItem('columns', JSON.stringify(parsed))
+    columnsList.push(newColumn)
+    window.localStorage.setItem('columns', JSON.stringify(columnsList))
 
     const newColumnsList: string[] = [...(project.columns || []), newColumn._id]
     
@@ -132,8 +126,22 @@ export function CreateColumn(projectId:string, data: {name:string, description:s
 
 }
 
-export function editColumn() {
+export function editColumn(columnId: string, data:{name?:string, description?:string, color?:string}, onFinish: ()=>void = ()=>{}) {
+  const columnsList = getColumns()
+  const columnIndex: number = columnsList.findIndex((item: Project)=>item._id === columnId)
 
+  if(columnIndex !== -1){
+    columnsList[columnIndex] = {
+      ...columnsList[columnIndex],
+      ...(data.name ? {name: data.name} : {}),
+      ...(data.description ? {description: data.description} : {}),
+      ...(data.color ? {color: data.color} : {}),
+      updatedAt: new Date()
+    }
+
+    window.localStorage.setItem('columns', JSON.stringify(columnsList))
+    onFinish()
+  }
 }
 
 export function deleteColumn(columnId: string, onFinish: () => void = () => {}) {

@@ -21,7 +21,13 @@ export default function CreateEditModal ({close, project, updateList}: {close: (
           updateList();
         })
       }else{
-        editProject(project._id, {name,description}, () => {
+        const updatedData = {
+          ...(name ? {name} : {}),
+          ...(description ? {description} : {}),
+        }
+
+
+        editProject(project._id, updatedData, () => {
           closeModal();
           updateList();
         })
