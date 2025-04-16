@@ -1,29 +1,25 @@
 'use client'
 
 import { Button } from "@/components/ui";
-import { Project } from "@/types";
+import { Project, Column as ColumnType } from "@/types";
 import { useState, useEffect } from "react";
 import { Column, CreateEditColumnModal } from "../_components/project";
 import { createPortal } from "react-dom";
+import { getOneProject } from "../db";
 
 export default function Projet({params}: {params: {id: string}}) {
   const {id} = params
-  const [projectData, setProjectData] = useState<Project>()
+  const [projectData, setProjectData] = useState<Project<{populateColumns: true}> | null>(null)
   const [isColumnModalOpen, setIsColumnModalOpen] = useState<boolean>(false)
 
-   useEffect(()=> {
-    updateList()
-  }, [])
-
   const updateList = ():void => {
-    const fromLS = window.localStorage.getItem('projects')
-    const parsed = fromLS ? JSON.parse(fromLS) : []
-    const match = parsed.find((item: Project)=>item._id === id)
-    
-    if(match){
-      setProjectData(match)
-    }
+    const newProjectData = getOneProject(id, {populateColumns: true})
+    setProjectData(newProjectData)
   }
+
+  useEffect(()=> {
+   updateList()
+  }, [])
   
   return (
     <div>
@@ -38,12 +34,7 @@ export default function Projet({params}: {params: {id: string}}) {
         </div>
       </div>
       <div className="mx-auto w-[80%] flex gap-5 mt-[20px] overflow-hidden overflow-x-auto pb-5">
-        <Column/>
-        <Column/>
-        <Column/>
-        <Column/>
-        <Column/>
-        <Column/>
+        {projectData?.columns?.map((item: ColumnType)=> <Column key={item._id} columnData={item} updateList={()=>updateList()} />)}
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { Button } from "../components/ui"
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import CreateEditModal from "./_components/home/CreateEditModal";
+import { getProjects } from "./db";
 
 export default function Home() {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState<boolean>(false)
@@ -15,11 +16,10 @@ export default function Home() {
     updateList()
   },[])
 
-  const updateList = ():void => {
-    const fromLS = window.localStorage.getItem('projects')
-    const parsed = fromLS ? JSON.parse(fromLS) : []
+  const updateList = () => {
+    const projects = getProjects()
 
-    setProjectsList(parsed)
+    setProjectsList(projects)
   }
 
   return (

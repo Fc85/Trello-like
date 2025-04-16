@@ -1,50 +1,31 @@
+import { CreateProject, editProject } from "@/app/db";
 import { Button } from "@/components/ui";
 import { Project } from "@/types";
 import {X as Close} from 'lucide-react'
 import { useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
-
 export default function CreateEditModal ({close, project, updateList}: {close: () => void, project?: Project,  updateList: () => void } ) {
   const [name, setName] = useState<string>(project?.name || '')
   const [description, setDescription] = useState<string>(project?.description || '')
 
-  const closeModal = ():void => {
+  const closeModal = () => {
     setName('')
     setDescription('')
     close()
   }
  
-  const handleSubmit = (): void => {
+  const handleSubmit = () => {
     if(name && description){
-      const projectsList: string = window.localStorage.getItem('projects') || ''
-      const formattedProjectsList: Project[] = projectsList ? JSON.parse(projectsList) : []
-
       if(!project?._id){
-        const newProject: Project = {
-          _id: uuidv4(),
-          name,
-          description,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-
-        formattedProjectsList.push(newProject)
+        CreateProject({name, description}, () => {
+          closeModal();
+          updateList();
+        })
       }else{
-        const projectIndex = formattedProjectsList.findIndex((item: Project)=>item._id === project?._id)
-
-        if(projectIndex !== -1){
-          formattedProjectsList[projectIndex] = {
-            ...formattedProjectsList[projectIndex],
-            name,
-            description,
-            updatedAt: new Date()
-          }
-        }
+        editProject(project._id, {name,description}, () => {
+          closeModal();
+          updateList();
+        })
       }
-        
-      window.localStorage.setItem('projects', JSON.stringify(formattedProjectsList))
-      closeModal()
-      updateList()
     }
   }
   
