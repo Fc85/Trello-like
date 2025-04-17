@@ -3,7 +3,7 @@ import { Column as ColumnType, Task as TaskType } from "@/types";
 import {X as Close} from 'lucide-react'
 import { useState } from "react";
 import { SketchPicker } from 'react-color';
-import { CreateColumn, CreateTask, editColumn } from "@/app/db";
+import { CreateColumn, CreateTask, editColumn, editTask } from "@/app/db";
 
 export default function CreateEditModal ({type, close, parentId, data, updateList}: {type: "COLUMN" | "TASK",close: () => void, parentId: string, data?: ColumnType | TaskType,  updateList: () => void } ) {
   const [name, setName] = useState<string>(data?.name || '')
@@ -31,6 +31,11 @@ export default function CreateEditModal ({type, close, parentId, data, updateLis
         editColumn(data?._id, updatedData, ()=>{
           closeModal();
           updateList();
+        })
+
+        editTask(data._id, updatedData, ()=>{
+          closeModal();
+          updateList()
         })
       }else{
         if(type === 'COLUMN'){

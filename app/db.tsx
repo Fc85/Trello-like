@@ -157,7 +157,7 @@ export function CreateColumn(projectId:string, data: {name:string, description:s
 
 export function editColumn(columnId: string, data:{name?:string, description?:string, color?:string, tasks?:string[]}, onFinish: ()=>void = ()=>{}) {
   const columnsList = getColumns()
-  const columnIndex: number = columnsList.findIndex((item: Project)=>item._id === columnId)
+  const columnIndex: number = columnsList.findIndex((item: Column)=>item._id === columnId)
 
   if(columnIndex !== -1){
     columnsList[columnIndex] = {
@@ -213,10 +213,6 @@ export function getTasks(): Task[] {
   return parsed
 }
 
-export function getOneTask() {
-
-}
-
 export function CreateTask(columnId:string, data: {name:string, description:string, color?:string}, onFinish: ()=>void = ()=>{}) {
   const columnsList = getTasks()
   const column = getOneColumn(columnId)
@@ -241,8 +237,22 @@ export function CreateTask(columnId:string, data: {name:string, description:stri
   }
 }
 
-export function editTask() {
+export function editTask(taskId: string, data:{name?:string, description?:string, color?:string}, onFinish: ()=>void = ()=>{}) {
+  const tasksList = getTasks()
+  const taskIndex: number = tasksList.findIndex((item: Task)=>item._id === taskId)
 
+  if(taskIndex !== -1){
+    tasksList[taskIndex] = {
+      ...tasksList[taskIndex],
+      ...(data.name ? {name: data.name} : {}),
+      ...(data.description ? {description: data.description} : {}),
+      ...(data.color ? {color: data.color} : {}),
+      updatedAt: new Date()
+    }
+
+    window.localStorage.setItem('tasks', JSON.stringify(tasksList))
+    onFinish()
+  }
 }
 
 export function deleteTask(taskId: string, columnId: string, onFinish: () => void = () => {}) {
