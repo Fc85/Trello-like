@@ -15,7 +15,7 @@ export default function CreateEditProjectModal ({close, project, updateList}: {c
   }
  
   const handleSubmit = () => {
-    if(name && description){
+    if(name.trim() && description.trim()){
       if(!project?._id){
         createProject({name, description}, () => {
           closeModal();

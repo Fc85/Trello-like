@@ -27,7 +27,7 @@ export default function Task ({columnId, taskData, updateList}: {columnId: strin
         </div>
       </span>
       <p className="text-sm">{taskData.description}</p>
-      <span className="flex items-center justify-between">
+      <span className="flex items-center justify-between p-0 m-0">
       <small>{taskData?.deadline && `Date limite : ${format(new Date(taskData.deadline), 'dd/MM/yyyy')}`}</small>
       {!taskData.isCompleted && <Button title="Compléter la tâche" onClick={()=>editTask(taskData._id, {isCompleted: true}, ()=>updateList())}><CircleCheck width={13} height={13}/></Button>}
       </span>

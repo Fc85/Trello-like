@@ -24,7 +24,7 @@ export default function CreateEditColumnTaskModal ({type, close, parentId, data,
   }
  
   const handleSubmit = () => {
-    if(name && description && parentId){
+    if(name.trim() && description.trim() && parentId.trim()){
       if(data?._id){
         const updatedData = {
           ...(name ? {name} : {}),
