@@ -5,7 +5,7 @@ import Task from "../Task/Task";
 import { deleteColumn } from "@/app/db";
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import CreateEditModal from "../CreateEditModal";
+import CreateEditColumnTaskModal from "../CreateEditColumnTaskModal";
 
 export default function Column ({columnData, projectId, updateList}: {columnData: ColumnType, projectId: string, updateList: ()=>void}) {
   const [isModalOpen, setIsModalOpen] = useState<{isOpen: boolean, type?: 'COLUMN' | 'TASK'}>({isOpen: false})
@@ -13,7 +13,7 @@ export default function Column ({columnData, projectId, updateList}: {columnData
   return (
     <div style={{backgroundColor: columnData?.color ? columnData.color : '#e5e5e5'}} className="border-1 border-black rounded-2xl p-[20px] w-[350px] min-w-[350px]">
         {isModalOpen.isOpen && isModalOpen.type && 
-          createPortal(<CreateEditModal type={isModalOpen.type} {...(isModalOpen.type === 'COLUMN' ? {data: columnData} : {})} parentId={isModalOpen.type === 'COLUMN' ? projectId : columnData._id} close={()=>setIsModalOpen({isOpen: false})} updateList={updateList} />, document.body)
+          createPortal(<CreateEditColumnTaskModal type={isModalOpen.type} {...(isModalOpen.type === 'COLUMN' ? {data: columnData} : {})} parentId={isModalOpen.type === 'COLUMN' ? projectId : columnData._id} close={()=>setIsModalOpen({isOpen: false})} updateList={updateList} />, document.body)
         }
         <span className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-semibold">{columnData?.name}</h3>

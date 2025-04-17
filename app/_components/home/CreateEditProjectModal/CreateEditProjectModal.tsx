@@ -3,7 +3,8 @@ import { Button } from "@/components/ui";
 import { Project } from "@/types";
 import {X as Close} from 'lucide-react'
 import { useState } from "react";
-export default function CreateEditModal ({close, project, updateList}: {close: () => void, project?: Project,  updateList: () => void } ) {
+
+export default function CreateEditProjectModal ({close, project, updateList}: {close: () => void, project?: Project,  updateList: () => void } ) {
   const [name, setName] = useState<string>(project?.name || '')
   const [description, setDescription] = useState<string>(project?.description || '')
 

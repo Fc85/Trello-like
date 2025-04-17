@@ -5,7 +5,7 @@ import { ProjectCard } from "./_components/home";
 import { Button } from "../components/ui"
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import CreateEditModal from "./_components/home/CreateEditModal";
+import CreateEditProjectModal from "./_components/home/CreateEditProjectModal";
 import { getProjects } from "./db";
 
 export default function Home() {
@@ -24,7 +24,7 @@ export default function Home() {
 
   return (
     <div className="px-[10%]">
-      {isProjectModalOpen && createPortal(<CreateEditModal close={()=>setIsProjectModalOpen(false)} updateList={updateList} />, document.body)}
+      {isProjectModalOpen && createPortal(<CreateEditProjectModal close={()=>setIsProjectModalOpen(false)} updateList={updateList} />, document.body)}
       <h1 className="text-7xl font-bold text-center py-[100px]">Accueil</h1>
       <section>
         <div className="flex justify-between items-center mb-[20px]">

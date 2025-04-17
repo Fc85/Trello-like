@@ -5,7 +5,7 @@ import { useState } from "react";
 import { SketchPicker } from 'react-color';
 import { CreateColumn, CreateTask, editColumn, editTask } from "@/app/db";
 
-export default function CreateEditModal ({type, close, parentId, data, updateList}: {type: "COLUMN" | "TASK",close: () => void, parentId: string, data?: ColumnType | TaskType,  updateList: () => void } ) {
+export default function CreateEditColumnTaskModal ({type, close, parentId, data, updateList}: {type: "COLUMN" | "TASK",close: () => void, parentId: string, data?: ColumnType | TaskType,  updateList: () => void } ) {
   const [name, setName] = useState<string>(data?.name || '')
   const [description, setDescription] = useState<string>(data?.description || '')
   const [color, setColor] = useState<string>(data?.color || '')
