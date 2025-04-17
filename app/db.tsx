@@ -26,7 +26,7 @@ export function getOneProject<TP extends {populateColumns: boolean} = {populateC
   return null
 }
 
-export function CreateProject(data: {name:string, description:string}, onFinish: ()=>void = ()=>{}) {
+export function createProject(data: {name:string, description:string}, onFinish: ()=>void = ()=>{}) {
   const projectsList = getProjects()
 
   const newProject: Project = {
@@ -127,12 +127,12 @@ export function getColumns<T extends {populateTasks: boolean} = {populateTasks: 
 
 export function getOneColumn(id: string) {
   const columnsList = getColumns()
-  const matchingColumn: Column | undefined = columnsList.find((item: Project)=>item._id === id)
+  const matchingColumn: Column | undefined = columnsList.find((item: Column)=>item._id === id)
 
   return matchingColumn || null
 }
 
-export function CreateColumn(projectId:string, data: {name:string, description:string, color?:string, deadline?: Date}, onFinish: ()=>void = ()=>{}) {
+export function createColumn(projectId:string, data: {name:string, description:string, color?:string, deadline?: Date}, onFinish: ()=>void = ()=>{}) {
   const columnsList = getColumns()
   const project = getOneProject(projectId)
 
@@ -145,6 +145,27 @@ export function CreateColumn(projectId:string, data: {name:string, description:s
       updatedAt: new Date(),
       ...(data.color ? {color: data.color} : {}),
       ...(data.deadline ? {deadline: data.deadline} : {}),
+    }
+
+    columnsList.push(newColumn)
+    window.localStorage.setItem('columns', JSON.stringify(columnsList))
+
+    const newColumnsList: string[] = [...(project.columns || []), newColumn._id]
+    
+    editProject(projectId, {columns: newColumnsList}, ()=>onFinish())
+  }
+}
+
+export function duplicateColumn(projectId: string, columnId: string, onFinish: ()=>void = ()=>{}){
+  const columnsList = getColumns()
+  const matchingColumn = getOneColumn(columnId)
+  const project = getOneProject(projectId)
+
+  if(project && matchingColumn){
+    const newColumn: Column = {
+      ...matchingColumn,
+      _id: uuidv4(),
+      name: matchingColumn.name + ' - copie',
     }
 
     columnsList.push(newColumn)
@@ -215,7 +236,14 @@ export function getTasks(): Task[] {
   return parsed
 }
 
-export function CreateTask(columnId:string, data: {name:string, description:string, color?:string, deadline: Date}, onFinish: ()=>void = ()=>{}) {
+export function getOneTask(id: string) {
+  const tasksList = getTasks()
+  const matchingTask: Task | undefined = tasksList.find((item: Task)=>item._id === id)
+
+  return matchingTask || null
+}
+
+export function createTask(columnId:string, data: {name:string, description:string, color?:string, deadline?: Date}, onFinish: ()=>void = ()=>{}) {
   const columnsList = getTasks()
   const column = getOneColumn(columnId)
 
@@ -237,6 +265,27 @@ export function CreateTask(columnId:string, data: {name:string, description:stri
     
     editColumn(columnId, {tasks: newTasksList}, ()=>onFinish())
     onFinish()
+  }
+}
+
+export function duplicateTask(columnId: string, taskId: string, onFinish: ()=>void = ()=>{}){
+  const tasksList = getTasks()
+  const matchingTask = getOneTask(taskId)
+  const column = getOneColumn(columnId)
+  
+  if(column && matchingTask){
+    const newTask: Task = {
+      ...matchingTask,
+      _id: uuidv4(),
+      name: matchingTask.name + ' - copie',
+    }
+
+    tasksList.push(newTask)
+    window.localStorage.setItem('tasks', JSON.stringify(tasksList))
+
+    const newTasksList: string[] = [...(column.tasks || []), newTask._id]
+    
+    editColumn(columnId, {tasks: newTasksList}, ()=>onFinish())
   }
 }
 

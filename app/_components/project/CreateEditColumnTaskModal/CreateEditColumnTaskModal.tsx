@@ -3,7 +3,7 @@ import { Column as ColumnType, Task as TaskType } from "@/types";
 import {X as Close} from 'lucide-react'
 import { useState } from "react";
 import { SketchPicker } from 'react-color';
-import { CreateColumn, CreateTask, editColumn, editTask } from "@/app/db";
+import { createColumn, createTask, editColumn, editTask } from "@/app/db";
 import { DatePickerInput } from 'rc-datepicker';
 import 'rc-datepicker/lib/style.css';
 import 'moment/locale/fr.js'
@@ -12,7 +12,7 @@ export default function CreateEditColumnTaskModal ({type, close, parentId, data,
   const [name, setName] = useState<string>(data?.name || '')
   const [description, setDescription] = useState<string>(data?.description || '')
   const [color, setColor] = useState<string>(data?.color || '')
-  const [deadline, setDeadline] = useState<Date>(data?.deadline || new Date())
+  const [deadline, setDeadline] = useState<Date | null>(data?.deadline || null)
   const [isColorPickerOpen, setIsColorPickerOpen] = useState<boolean>(false)
 
   const closeModal = ():void => {
@@ -44,14 +44,14 @@ export default function CreateEditColumnTaskModal ({type, close, parentId, data,
         })
       }else{
         if(type === 'COLUMN'){
-          CreateColumn(parentId, {name, description, ...(color ? {color} : {}), ...(deadline ? {deadline} : {})}, ()=>{
+          createColumn(parentId, {name, description, ...(color ? {color} : {}), ...(deadline ? {deadline} : {})}, ()=>{
             closeModal();
             updateList();
           })
         }
         
         if(type === 'TASK'){
-          CreateTask(parentId, {name, description, ...(color ? {color} : {}), ...(deadline ? {deadline} : {})}, ()=>{
+          createTask(parentId, {name, description, ...(color ? {color} : {}), ...(deadline ? {deadline} : {})}, ()=>{
             closeModal();
             updateList();
           })

@@ -1,4 +1,4 @@
-import { CreateProject, editProject } from "@/app/db";
+import { createProject, editProject } from "@/app/db";
 import { Button } from "@/components/ui";
 import { Project } from "@/types";
 import {X as Close} from 'lucide-react'
@@ -17,7 +17,7 @@ export default function CreateEditProjectModal ({close, project, updateList}: {c
   const handleSubmit = () => {
     if(name && description){
       if(!project?._id){
-        CreateProject({name, description}, () => {
+        createProject({name, description}, () => {
           closeModal();
           updateList();
         })

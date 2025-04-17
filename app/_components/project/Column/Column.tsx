@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui"
 import { Column as ColumnType, Task as TaskType } from "@/types"
-import { Pencil as Edit, Trash2 as Delete, Move, Plus } from 'lucide-react';
+import { Pencil as Edit, Trash2 as Delete, Move, Plus, CopyPlus } from 'lucide-react';
 import Task from "../Task/Task";
-import { deleteColumn } from "@/app/db";
+import { deleteColumn, duplicateColumn } from "@/app/db";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import CreateEditColumnTaskModal from "../CreateEditColumnTaskModal";
@@ -20,6 +20,7 @@ export default function Column ({columnData, projectId, updateList}: {columnData
         <h3 className="text-lg font-semibold">{columnData?.name}</h3>
         <div className="flex gap-1 min-w-fit h-fit">
           <Button onClick={()=>deleteColumn(projectId, columnData._id, ()=> updateList())}><Delete width={20} height={20} /></Button>
+          <Button onClick={()=>duplicateColumn(projectId, columnData._id, ()=> updateList())} ><CopyPlus width={20} height={20}/></Button>
           <Button onClick={()=>setIsModalOpen({ isOpen: true, type:'COLUMN'})}><Edit width={20} height={20} /></Button>
           <Button><Move  width={20} height={20}/></Button>
         </div>
