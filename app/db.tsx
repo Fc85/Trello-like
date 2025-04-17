@@ -289,7 +289,7 @@ export function duplicateTask(columnId: string, taskId: string, onFinish: ()=>vo
   }
 }
 
-export function editTask(taskId: string, data:{name?:string, description?:string, color?:string, deadline?: Date}, onFinish: ()=>void = ()=>{}) {
+export function editTask(taskId: string, data:{name?:string, description?:string, color?:string, deadline?: Date, isCompleted?: boolean}, onFinish: ()=>void = ()=>{}) {
   const tasksList = getTasks()
   const taskIndex: number = tasksList.findIndex((item: Task)=>item._id === taskId)
 
@@ -300,6 +300,7 @@ export function editTask(taskId: string, data:{name?:string, description?:string
       ...(data.description ? {description: data.description} : {}),
       ...(data.color ? {color: data.color} : {}),
       ...(data.deadline ? {deadline: data.deadline} : {}),
+      ...(data.isCompleted ? {isCompleted: data.isCompleted, completedAt: new Date()} : {}),
       updatedAt: new Date()
     }
 

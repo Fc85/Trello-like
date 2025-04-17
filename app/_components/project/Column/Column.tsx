@@ -19,10 +19,10 @@ export default function Column ({columnData, projectId, updateList}: {columnData
         <span className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-semibold">{columnData?.name}</h3>
         <div className="flex gap-1 min-w-fit h-fit">
-          <Button onClick={()=>deleteColumn(projectId, columnData._id, ()=> updateList())}><Delete width={20} height={20} /></Button>
-          <Button onClick={()=>duplicateColumn(projectId, columnData._id, ()=> updateList())} ><CopyPlus width={20} height={20}/></Button>
-          <Button onClick={()=>setIsModalOpen({ isOpen: true, type:'COLUMN'})}><Edit width={20} height={20} /></Button>
-          <Button><Move  width={20} height={20}/></Button>
+          <Button title="Supprimer" onClick={()=>deleteColumn(projectId, columnData._id, ()=> updateList())}><Delete width={20} height={20} /></Button>
+          <Button title="Dupliquer" onClick={()=>duplicateColumn(projectId, columnData._id, ()=> updateList())} ><CopyPlus width={20} height={20}/></Button>
+          <Button title="Modifier" onClick={()=>setIsModalOpen({ isOpen: true, type:'COLUMN'})}><Edit width={20} height={20} /></Button>
+          <Button title="Déplacer"><Move  width={20} height={20}/></Button>
         </div>
       </span>
       <p>{columnData?.description}</p>
@@ -30,7 +30,7 @@ export default function Column ({columnData, projectId, updateList}: {columnData
       <hr className="my-2" />
       <span className="flex justify-between items-center">
         <h4 className="font-semibold">Tâches</h4>
-        <Button onClick={()=>setIsModalOpen({ isOpen: true, type:'TASK'})}><Plus width={20} height={20} /></Button>
+        <Button title="Ajouter une tâche" onClick={()=>setIsModalOpen({ isOpen: true, type:'TASK'})}><Plus width={20} height={20} /></Button>
       </span>
       {columnData.tasks?.map((item:TaskType)=> <Task key={item._id} columnId={columnData._id} taskData={item} updateList={()=>updateList()} />)}
     </div>

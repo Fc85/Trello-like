@@ -20,10 +20,10 @@ export default function ProjectCard ({project, updateList}: {project: Project, u
       </span>
         <p>{project.description}</p>
         <Link href={`/${project._id}`}><Button className="float-right mt-[20px]">Accéder</Button></Link>
-        <Button className="mr-3 float-right mt-[20px]" onClick={()=>setIsProjectModalOpen(true)}>
+        <Button title="Modifier" className="mr-3 float-right mt-[20px]" onClick={()=>setIsProjectModalOpen(true)}>
           <Edit/>
         </Button>
-        <Button className="mr-3 float-right mt-[20px]">
+        <Button title="Supprimer" className="mr-3 float-right mt-[20px]">
           <Delete onClick={()=>deleteProject(project._id, ()=> updateList())}/>
         </Button>
     </span>

@@ -30,7 +30,7 @@ export default function Projet({params}: {params: {id: string}}) {
           <p>{projectData?.description}</p>
         </div>
         <div className="min-w-fit h-fit ml-[20px]">
-          <Button onClick={()=>setIsColumnModalOpen(true)}>Nouvelle colonne</Button>
+          <Button title="Ajouter une colonne" onClick={()=>setIsColumnModalOpen(true)}>Nouvelle colonne</Button>
         </div>
       </div>
       <div className="mx-auto w-[80%] flex gap-5 mt-[20px] overflow-x-auto pb-5 mb-28">
