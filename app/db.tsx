@@ -132,7 +132,7 @@ export function getOneColumn(id: string) {
   return matchingColumn || null
 }
 
-export function CreateColumn(projectId:string, data: {name:string, description:string, color?:string}, onFinish: ()=>void = ()=>{}) {
+export function CreateColumn(projectId:string, data: {name:string, description:string, color?:string, deadline?: Date}, onFinish: ()=>void = ()=>{}) {
   const columnsList = getColumns()
   const project = getOneProject(projectId)
 
@@ -143,7 +143,8 @@ export function CreateColumn(projectId:string, data: {name:string, description:s
       description: data.description,
       createdAt: new Date(),
       updatedAt: new Date(),
-      ...(data.color ? {color: data.color} : {})
+      ...(data.color ? {color: data.color} : {}),
+      ...(data.deadline ? {deadline: data.deadline} : {}),
     }
 
     columnsList.push(newColumn)
@@ -155,7 +156,7 @@ export function CreateColumn(projectId:string, data: {name:string, description:s
   }
 }
 
-export function editColumn(columnId: string, data:{name?:string, description?:string, color?:string, tasks?:string[]}, onFinish: ()=>void = ()=>{}) {
+export function editColumn(columnId: string, data:{name?:string, description?:string, color?:string, deadline?: Date, tasks?:string[]}, onFinish: ()=>void = ()=>{}) {
   const columnsList = getColumns()
   const columnIndex: number = columnsList.findIndex((item: Column)=>item._id === columnId)
 
@@ -166,6 +167,7 @@ export function editColumn(columnId: string, data:{name?:string, description?:st
       ...(data.description ? {description: data.description} : {}),
       ...(data.color ? {color: data.color} : {}),
       ...(data.tasks ? {tasks: data.tasks} : {}),
+      ...(data.deadline ? {deadline: data.deadline} : {}),
       updatedAt: new Date()
     }
 
@@ -213,7 +215,7 @@ export function getTasks(): Task[] {
   return parsed
 }
 
-export function CreateTask(columnId:string, data: {name:string, description:string, color?:string}, onFinish: ()=>void = ()=>{}) {
+export function CreateTask(columnId:string, data: {name:string, description:string, color?:string, deadline: Date}, onFinish: ()=>void = ()=>{}) {
   const columnsList = getTasks()
   const column = getOneColumn(columnId)
 
@@ -224,7 +226,8 @@ export function CreateTask(columnId:string, data: {name:string, description:stri
       description: data.description,
       createdAt: new Date(),
       updatedAt: new Date(),
-      ...(data.color ? {color: data.color} : {})
+      ...(data.color ? {color: data.color} : {}),
+      ...(data.deadline ? {deadline: data.deadline} : {}),
     }
 
     columnsList.push(newTask)
@@ -237,7 +240,7 @@ export function CreateTask(columnId:string, data: {name:string, description:stri
   }
 }
 
-export function editTask(taskId: string, data:{name?:string, description?:string, color?:string}, onFinish: ()=>void = ()=>{}) {
+export function editTask(taskId: string, data:{name?:string, description?:string, color?:string, deadline?: Date}, onFinish: ()=>void = ()=>{}) {
   const tasksList = getTasks()
   const taskIndex: number = tasksList.findIndex((item: Task)=>item._id === taskId)
 
@@ -247,6 +250,7 @@ export function editTask(taskId: string, data:{name?:string, description?:string
       ...(data.name ? {name: data.name} : {}),
       ...(data.description ? {description: data.description} : {}),
       ...(data.color ? {color: data.color} : {}),
+      ...(data.deadline ? {deadline: data.deadline} : {}),
       updatedAt: new Date()
     }
 

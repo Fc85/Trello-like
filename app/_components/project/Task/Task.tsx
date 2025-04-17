@@ -5,6 +5,7 @@ import { Pencil as Edit, Trash2 as Delete, Move } from 'lucide-react';
 import { useState } from "react";
 import CreateEditColumnTaskModal from "../CreateEditColumnTaskModal";
 import { createPortal } from "react-dom";
+import { format } from "date-fns";
 
 export default function Task ({columnId, taskData, updateList}: {columnId: string, taskData: TaskType, updateList: ()=>void}) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
@@ -23,6 +24,7 @@ export default function Task ({columnId, taskData, updateList}: {columnId: strin
         </div>
       </span>
       <p className="text-sm">{taskData.description}</p>
+      <small>{taskData?.deadline && `Date limite : ${format(new Date(taskData.deadline), 'dd/MM/yyyy')}`}</small>
     </div>
   )
 }

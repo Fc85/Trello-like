@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "date-fns": "^4.1.0",
     "dnd-kit": "^0.0.2",
     "lucide-react": "^0.487.0",
     "next": "15.3.0",
+    "rc-datepicker": "^5.0.17",
     "react": "^19.0.0",
     "react-color": "^2.19.3",
     "react-dom": "^19.0.0",

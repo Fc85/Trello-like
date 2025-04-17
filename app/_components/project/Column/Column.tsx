@@ -6,6 +6,7 @@ import { deleteColumn } from "@/app/db";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import CreateEditColumnTaskModal from "../CreateEditColumnTaskModal";
+import { format } from "date-fns";
 
 export default function Column ({columnData, projectId, updateList}: {columnData: ColumnType, projectId: string, updateList: ()=>void}) {
   const [isModalOpen, setIsModalOpen] = useState<{isOpen: boolean, type?: 'COLUMN' | 'TASK'}>({isOpen: false})
@@ -24,6 +25,7 @@ export default function Column ({columnData, projectId, updateList}: {columnData
         </div>
       </span>
       <p>{columnData?.description}</p>
+      <small>{columnData?.deadline && `Date limite : ${format(new Date(columnData.deadline), 'dd/MM/yyyy')}`}</small>
       <hr className="my-2" />
       <span className="flex justify-between items-center">
         <h4 className="font-semibold">Tâches</h4>

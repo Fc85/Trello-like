@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+.react-datepicker-input {
+  border: 1px solid black !important;
+  background: white !important;
+}
