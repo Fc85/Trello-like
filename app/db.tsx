@@ -78,16 +78,31 @@ export function deleteProject(id:string, onFinish: ()=>void = () => {}) {
   const projectIndex: number = projectsList.findIndex((item: Project)=>item._id === id)
   
   if(projectIndex !== -1){
-    // if(projectsList[projectIndex].columns?.length){
-    //   for(let index = 0; index < projectsList[projectIndex].columns.length; index++){
-    //     deleteColumn(projectsList[projectIndex].columns[index])
-    //   }
-    // }
-    // TODO: Supprimer les colonnes et tâches liées à ce projet
+    if(projectsList[projectIndex].columns?.length){
+      const columnsList = getColumns()
+      const columnsToDelete: Column[] = columnsList.filter((item: Column)=> projectsList[projectIndex].columns?.includes(item._id))
+    
+      // Suppression des tâches
+      for(let index = 0; index < columnsToDelete.length; index++){
+        if(columnsToDelete[index].tasks?.length){
+          const tasks = getTasks()
+          const newTasks: Task[] = tasks.filter((item:Task) => !columnsToDelete[index].tasks?.includes(item._id))
+          
+          window.localStorage.setItem('tasks', JSON.stringify(newTasks))
+        }
+      }
 
+      // Suppression des colonnes
+      const formattedColumnsToDelete: string[] = columnsToDelete.map((item:Column)=> item._id)
+      const newColumns: Column[] = columnsList.filter((item:Column)=> !formattedColumnsToDelete.includes(item._id))
+
+      window.localStorage.setItem('columns', JSON.stringify(newColumns))
+    }
+
+    // Suppression du projet
     projectsList.splice(projectIndex, 1)
-
     window.localStorage.setItem('projects', JSON.stringify(projectsList))
+
     onFinish()
   }
 }
@@ -161,16 +176,33 @@ export function editColumn(columnId: string, data:{name?:string, description?:st
 
 export function deleteColumn(projectId: string, columnId: string, onFinish: () => void = () => {}) {
   const columns = getColumns()
+  const projects = getProjects()
+  const projectIndex: number = projects.findIndex((item:Project)=>item._id === projectId)
   const columnIndex: number = columns.findIndex((item:Column)=> item._id === columnId)
 
-  
-  if(columnIndex !== -1){
-    columns.splice(columnIndex, 1)
-    // TODO: Supprimer les tâches liées à cette colonne
-    // TODO: Supprimer la colonne dans le projet
+  if(columnIndex !== -1 && projectIndex !== -1 && projects[projectIndex].columns?.length){
+    const columnPosition: number = projects[projectIndex].columns?.findIndex((item: string)=> item === columnId)
+    
+    if(columnPosition !== -1){
+      //Suppression des  tâches liées à cette colonne
+      if(columns[columnIndex].tasks?.length){
+        const tasks = getTasks()
+        const newTasks = tasks.filter((item:Task)=> !columns[columnIndex].tasks?.includes(item._id))
 
-    window.localStorage.setItem('columns', JSON.stringify(columns))
-    onFinish()
+        window.localStorage.setItem('tasks', JSON.stringify(newTasks))
+      }
+
+      //Suppression de la colonne dans le projet
+      projects[projectIndex].columns?.splice(columnPosition, 1)
+      window.localStorage.setItem('projects', JSON.stringify(projects))
+      
+
+      //Suppression de la colonne
+      columns.splice(columnIndex, 1)
+      window.localStorage.setItem('columns', JSON.stringify(columns))
+
+      onFinish()
+    }
   }
 }
 

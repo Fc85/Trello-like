@@ -18,7 +18,7 @@ export default function Column ({columnData, projectId, updateList}: {columnData
         <span className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-semibold">{columnData?.name}</h3>
         <div className="flex gap-1 min-w-fit h-fit">
-          <Button onClick={()=>deleteColumn(columnData._id, ()=> updateList())}><Delete width={20} height={20} /></Button>
+          <Button onClick={()=>deleteColumn(projectId, columnData._id, ()=> updateList())}><Delete width={20} height={20} /></Button>
           <Button onClick={()=>setIsModalOpen({ isOpen: true, type:'COLUMN'})}><Edit width={20} height={20} /></Button>
           <Button><Move  width={20} height={20}/></Button>
         </div>
