@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Header } from "./_components";
+import { Header, Footer } from "./_components";
 
 export const metadata: Metadata = {
   title: "Trello like",
@@ -14,11 +14,12 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="en">
-      <body className="bg-gray-300">
+    <html lang="en" className="min-h-[100vh] relative">
+      <body className="bg-gray-300 min-h-[100vh]">
         <Header/>
         {children}
       </body>
+      <Footer/>
     </html>
   );
 }

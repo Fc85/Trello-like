@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import CreateEditProjectModal from "./_components/home/CreateEditProjectModal";
 import { getProjects } from "./db";
-import './global.css'
 
 export default function Home() {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState<boolean>(false)
