@@ -12,7 +12,7 @@ export default function CreateEditColumnTaskModal ({type, close, parentId, data,
   const [name, setName] = useState<string>(data?.name || '')
   const [description, setDescription] = useState<string>(data?.description || '')
   const [color, setColor] = useState<string>(data?.color || '')
-  const [deadline, setDeadline] = useState<Date | null>(data?.deadline || null)
+  const [deadline, setDeadline] = useState<Date | undefined>(data?.deadline || undefined)
   const [isColorPickerOpen, setIsColorPickerOpen] = useState<boolean>(false)
 
   const closeModal = ():void => {
