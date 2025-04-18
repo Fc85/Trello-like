@@ -7,12 +7,25 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import CreateEditColumnTaskModal from "../CreateEditColumnTaskModal";
 import { format } from "date-fns";
+import { useSortable } from "@dnd-kit/sortable";
+import {CSS} from '@dnd-kit/utilities';
 
-export default function Column ({columnData, projectId, updateList}: {columnData: ColumnType, projectId: string, updateList: ()=>void}) {
+export default function Column ({columnData, projectId, updateList}: {columnData: ColumnType<{populateTasks: true}>, projectId: string, updateList: ()=>void}) {
   const [isModalOpen, setIsModalOpen] = useState<{isOpen: boolean, type?: 'COLUMN' | 'TASK'}>({isOpen: false})
-  
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({id: columnData._id});
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   return (
-    <div style={{backgroundColor: columnData?.color ? columnData.color : '#e5e5e5'}} className="border-1 border-black rounded-2xl p-[20px] w-[350px] min-w-[350px]">
+    <div ref={setNodeRef} style={{...style, backgroundColor: columnData?.color ? columnData.color : '#e5e5e5'}} className="border-1 border-black rounded-2xl p-[20px] w-[350px] min-w-[350px]">
         {isModalOpen.isOpen && isModalOpen.type && 
           createPortal(<CreateEditColumnTaskModal type={isModalOpen.type} {...(isModalOpen.type === 'COLUMN' ? {data: columnData} : {})} parentId={isModalOpen.type === 'COLUMN' ? projectId : columnData._id} close={()=>setIsModalOpen({isOpen: false})} updateList={updateList} />, document.body)
         }
@@ -22,7 +35,7 @@ export default function Column ({columnData, projectId, updateList}: {columnData
           <Button title="Supprimer" onClick={()=>deleteColumn(projectId, columnData._id, ()=> updateList())}><Delete width={20} height={20} /></Button>
           <Button title="Dupliquer" onClick={()=>duplicateColumn(projectId, columnData._id, ()=> updateList())} ><CopyPlus width={20} height={20}/></Button>
           <Button title="Modifier" onClick={()=>setIsModalOpen({ isOpen: true, type:'COLUMN'})}><Edit width={20} height={20} /></Button>
-          <Button title="Déplacer"><Move  width={20} height={20}/></Button>
+          <Button {...attributes} {...listeners} style={{cursor: 'grab'}} title="Déplacer"><Move  width={20} height={20}/></Button>
         </div>
       </span>
       <p>{columnData?.description}</p>

@@ -23,7 +23,7 @@ export default function Task ({columnId, taskData, updateList}: {columnId: strin
             <Button title="Dupliquer" onClick={()=>duplicateTask(columnId, taskData._id, ()=>updateList())}><CopyPlus width={13} height={13}/></Button>
             <Button title="Modifier" onClick={()=>setIsModalOpen(true)}><Edit width={13} height={13} /></Button>
           </>)}
-          <Button title="Déplacer"><Move width={13} height={13}/></Button>
+          <Button style={{cursor: 'grab'}}  title="Déplacer"><Move width={13} height={13}/></Button>
         </div>
       </span>
       <p className="text-sm">{taskData.description}</p>

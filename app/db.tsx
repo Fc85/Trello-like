@@ -15,10 +15,14 @@ export function getOneProject<TP extends {populateColumns: boolean} = {populateC
   if(matchingProject){
     if(projectOptions?.populateColumns){
       const columns = getColumns(columnOptions)
-      const filteredColumns = columns.filter((item:Column<TC>)=> matchingProject.columns?.includes(item._id))
-      const newProjectData: Project<TP> = {...matchingProject, columns: filteredColumns} as Project<TP>
+      const formattedColumns = matchingProject?.columns?.map((item:string)=> {
+        const matchingColumn = columns.find((col: Column<TC>)=> col._id === item)
+        
+        return matchingColumn
+      })
+      const newProjectData: Project<TP> = {...matchingProject, columns: formattedColumns} as Project<TP>
       
-      return newProjectData
+      return newProjectData as Project<TP> & {columns: Column<TC>}
     }
 
     return matchingProject as  Project<TP>
@@ -45,8 +49,8 @@ export function createProject(data: {name:string, description:string}, onFinish:
 export function editProject(id: string, data: {name?:string, description?:string, columns?:string[]} ,onFinish: ()=>void = ()=>{}) {
   const projectsList = getProjects()
   const projectIndex: number = projectsList.findIndex((item: Project)=>item._id === id)
-
-  if(projectIndex !== -1){
+  
+  if(projectIndex > -1){
     projectsList[projectIndex] = {
       ...projectsList[projectIndex],
       ...(data.name ? {name: data.name} : {}),
@@ -54,7 +58,7 @@ export function editProject(id: string, data: {name?:string, description?:string
       ...(data.columns ? {columns: data.columns} : {}),
       updatedAt: new Date()
     }
-
+    
     window.localStorage.setItem('projects', JSON.stringify(projectsList))
     onFinish()
   }
@@ -64,7 +68,7 @@ export function toggleStarredProject(id:string, onFinish: ()=>void = ()=>{}){
   const projectsList = getProjects()
   const projectIndex: number = projectsList.findIndex((item: Project)=>item._id === id)
 
-  if(projectIndex !== -1){
+  if(projectIndex > -1){
     projectsList[projectIndex].starred = !projectsList[projectIndex].starred
 
     window.localStorage.setItem('projects', JSON.stringify(projectsList))
@@ -77,7 +81,7 @@ export function deleteProject(id:string, onFinish: ()=>void = () => {}) {
   const projectsList = getProjects()
   const projectIndex: number = projectsList.findIndex((item: Project)=>item._id === id)
   
-  if(projectIndex !== -1){
+  if(projectIndex > -1){
     if(projectsList[projectIndex].columns?.length){
       const columnsList = getColumns()
       const columnsToDelete: Column[] = columnsList.filter((item: Column)=> projectsList[projectIndex].columns?.includes(item._id))
@@ -115,11 +119,15 @@ export function getColumns<T extends {populateTasks: boolean} = {populateTasks: 
     const tasks = getTasks()
   
     return parsed.map((col: Column)=> {
-      const filteredTasks = tasks.filter((item:Task)=> col.tasks?.includes(item._id))
-      const newColumnData: Column<T> = {...col, tasks: filteredTasks} as Column<T>
+      const formattedTasks = col?.tasks?.map((item:string)=> {
+        const matchingTask = tasks.find((tas: Task)=> tas._id === item)
+        
+        return matchingTask
+      })
+      const newColumnData: Column<T> = {...col, tasks: formattedTasks} as Column<T>
 
       return newColumnData
-    })
+    }) as Column<T>[]
   }
 
   return parsed as Column<T>[]
@@ -181,7 +189,7 @@ export function editColumn(columnId: string, data:{name?:string, description?:st
   const columnsList = getColumns()
   const columnIndex: number = columnsList.findIndex((item: Column)=>item._id === columnId)
 
-  if(columnIndex !== -1){
+  if(columnIndex > -1){
     columnsList[columnIndex] = {
       ...columnsList[columnIndex],
       ...(data.name ? {name: data.name} : {}),
@@ -203,10 +211,10 @@ export function deleteColumn(projectId: string, columnId: string, onFinish: () =
   const projectIndex: number = projects.findIndex((item:Project)=>item._id === projectId)
   const columnIndex: number = columns.findIndex((item:Column)=> item._id === columnId)
 
-  if(columnIndex !== -1 && projectIndex !== -1 && projects[projectIndex].columns?.length){
+  if(columnIndex > -1 && projectIndex > -1 && projects[projectIndex].columns?.length){
     const columnPosition: number = projects[projectIndex].columns?.findIndex((item: string)=> item === columnId)
     
-    if(columnPosition !== -1){
+    if(columnPosition > -1){
       //Suppression des  tâches liées à cette colonne
       if(columns[columnIndex].tasks?.length){
         const tasks = getTasks()
@@ -293,7 +301,7 @@ export function editTask(taskId: string, data:{name?:string, description?:string
   const tasksList = getTasks()
   const taskIndex: number = tasksList.findIndex((item: Task)=>item._id === taskId)
 
-  if(taskIndex !== -1){
+  if(taskIndex > -1){
     tasksList[taskIndex] = {
       ...tasksList[taskIndex],
       ...(data.name ? {name: data.name} : {}),
@@ -313,14 +321,14 @@ export function deleteTask(taskId: string, columnId: string, onFinish: () => voi
   const tasks = getTasks()
   const taskIndex: number = tasks.findIndex((item:Task)=> item._id === taskId)
 
-  if(taskIndex !== -1){
+  if(taskIndex > -1){
     const columns = getColumns()
     const columnIndex: number = columns.findIndex((item:Column)=> item._id === columnId)
 
-    if(columnIndex !== -1 && columns[columnIndex].tasks){
+    if(columnIndex > -1 && columns[columnIndex].tasks){
       const taskPosition: number = columns[columnIndex].tasks.findIndex((item: string)=>item === taskId)
 
-      if(taskPosition !== -1){
+      if(taskPosition > -1){
         columns[columnIndex].tasks?.splice(taskPosition, 1)
         tasks.splice(taskIndex, 1)
     
