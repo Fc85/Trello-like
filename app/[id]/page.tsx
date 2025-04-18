@@ -1,12 +1,12 @@
 'use client'
 
 import { Button } from "@/components/ui";
-import { Project, Column as ColumnType, Task } from "@/types";
+import { Project, Column as ColumnType } from "@/types";
 import { useState, useEffect } from "react";
 import { Column, CreateEditColumnTaskModal } from "../_components/project";
 import { createPortal } from "react-dom";
 import { editColumn, editProject, getColumns, getOneProject } from "../db";
-import { horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
+import { SortableContext } from "@dnd-kit/sortable";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 
 type PopulatedProjects = Omit<Project<{populateColumns: true}>, "columns"> & {columns: ColumnType<{populateTasks: true}>[]}
