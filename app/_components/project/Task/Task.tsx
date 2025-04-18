@@ -6,12 +6,25 @@ import { useState } from "react";
 import CreateEditColumnTaskModal from "../CreateEditColumnTaskModal";
 import { createPortal } from "react-dom";
 import { format } from "date-fns";
+import { useSortable } from "@dnd-kit/sortable";
+import {CSS} from '@dnd-kit/utilities';
 
 export default function Task ({columnId, taskData, updateList}: {columnId: string, taskData: TaskType, updateList: ()=>void}) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({id: taskData._id});
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   return (
-    <div style={{backgroundColor: taskData.color ? taskData.color : '#e5e5e5'}} className="border-1 border-black rounded-2xl p-[20px] mt-3">
+    <div ref={setNodeRef} style={{...style, backgroundColor: taskData.color ? taskData.color : '#e5e5e5'}} className="border-1 border-black rounded-2xl p-[20px] mt-3">
       {isModalOpen && 
         createPortal(<CreateEditColumnTaskModal type="TASK" data={taskData} parentId={columnId} close={()=>setIsModalOpen(false)} updateList={updateList} />, document.body)
       }      
@@ -23,7 +36,7 @@ export default function Task ({columnId, taskData, updateList}: {columnId: strin
             <Button title="Dupliquer" onClick={()=>duplicateTask(columnId, taskData._id, ()=>updateList())}><CopyPlus width={13} height={13}/></Button>
             <Button title="Modifier" onClick={()=>setIsModalOpen(true)}><Edit width={13} height={13} /></Button>
           </>)}
-          <Button style={{cursor: 'grab'}}  title="Déplacer"><Move width={13} height={13}/></Button>
+          <Button {...attributes} {...listeners} style={{cursor: 'grab'}} title="Déplacer"><Move width={13} height={13}/></Button>
         </div>
       </span>
       <p className="text-sm">{taskData.description}</p>

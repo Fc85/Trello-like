@@ -1,44 +1,99 @@
 'use client'
 
 import { Button } from "@/components/ui";
-import { Project, Column as ColumnType } from "@/types";
+import { Project, Column as ColumnType, Task } from "@/types";
 import { useState, useEffect } from "react";
 import { Column, CreateEditColumnTaskModal } from "../_components/project";
 import { createPortal } from "react-dom";
-import { editProject, getOneProject } from "../db";
+import { editColumn, editProject, getColumns, getOneProject } from "../db";
 import { horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 
-type TT = Omit<Project<{populateColumns: true}>, "columns"> & {columns: ColumnType<{populateTasks: true}>[]}
+type PopulatedProjects = Omit<Project<{populateColumns: true}>, "columns"> & {columns: ColumnType<{populateTasks: true}>[]}
+type dndOrigin = {type: "COLUMN" | "TASK" | null, parentId?: string}
 
 export default function Projet({params}: {params: {id: string}}) {
   const {id} = params
-  const [projectData, setProjectData] = useState<TT| null>(null)
-  const [columnsIds, setColumnIds] = useState<string[]>([])
+  const [projectData, setProjectData] = useState<PopulatedProjects| null>(null)
+  const [columnsIds, setColumnsIds] = useState<string[]>([])
+  const [tasksIds, setTasksIds] = useState<Record<string, Array<string>>>({})
   const [isColumnModalOpen, setIsColumnModalOpen] = useState<boolean>(false)
 
   const updateList = ():void => {
-    const newProjectData = getOneProject(id, {populateColumns: true}, {populateTasks: true})
-    setProjectData(newProjectData as unknown as TT)
-    setColumnIds(newProjectData?.columns?.map((item: ColumnType)=> item._id) || [])
+    const newProjectData = getOneProject(id, {populateColumns: true}, {populateTasks: true}) as (PopulatedProjects | null)
+
+    if (newProjectData) {
+      let newTasksIds = {}
+      setProjectData(newProjectData as unknown as PopulatedProjects)
+  
+      // Définition de l'id des columns
+      setColumnsIds((newProjectData?.columns?.map((item)=> item._id) as string[]) || [])
+  
+      // Définition de l'id des tâches
+      newProjectData?.columns?.forEach((col)=>{
+        newTasksIds = {...newTasksIds, [col._id]: (col.tasks)?.map((item)=> item._id) || []}
+      })
+
+      setTasksIds(newTasksIds)
+    }
   }
 
   useEffect(()=> {
    updateList()
   }, [])
 
-  const onDragEnd = (event: DragEndEvent) => {
-    const {active, over} = event
-    const activeIndex: number | undefined = projectData?.columns.findIndex((item: ColumnType<{populateTasks: true}>)=> item._id === active.id)
-    const overIndex: number | undefined = projectData?.columns.findIndex((item: ColumnType<{populateTasks: true}>)=> item._id === over?.id)
+  const getOrigin = (elemId: string): dndOrigin => {
+    if(columnsIds.includes(elemId)){
+      return {type: 'COLUMN'}
+    }
+
+    for(const key in tasksIds){
+      if(tasksIds[key].includes(elemId)){
+        return {type: 'TASK', parentId: key}
+      }
+    }
+
+    return {type: null}
+  }
+
+  const onDragEnd = ({active, over}: DragEndEvent) => {
+    console.log(active)
+    const activeOrigin: dndOrigin = getOrigin(active.id as string)
+    const overOrigin: dndOrigin = getOrigin(over?.id as string)
     
-    if(activeIndex !== undefined && activeIndex > -1 && overIndex !== undefined && overIndex > -1){
-      const array = [...columnsIds]
-      const item = array[activeIndex];
-      array.splice(activeIndex, 1);
-      array.splice(overIndex, 0, item);
+    if(activeOrigin.type === 'COLUMN' && overOrigin.type === 'COLUMN'){
+      const activeIndex: number | undefined = projectData?.columns.findIndex((item: ColumnType<{populateTasks: true}>)=> item._id === active.id)
+      const overIndex: number | undefined = projectData?.columns.findIndex((item: ColumnType<{populateTasks: true}>)=> item._id === over?.id)
       
-      editProject(id, {columns: array}, () => updateList() )
+      if(activeIndex !== undefined && activeIndex > -1 && overIndex !== undefined && overIndex > -1){
+        const array = [...columnsIds]
+        const item = array[activeIndex];
+        array.splice(activeIndex, 1);
+        array.splice(overIndex, 0, item);
+        
+        editProject(id, {columns: array}, () => updateList() )
+      }
+    }
+
+    if(activeOrigin.type === 'TASK' && overOrigin.type === 'TASK' && activeOrigin.parentId === overOrigin.parentId){
+      const columnsList = getColumns()
+      const columnIndex = columnsList.findIndex((item)=> item._id === activeOrigin.parentId)
+
+      if(columnIndex > -1){
+        const activeIndex: number | undefined = columnsList[columnIndex].tasks?.findIndex((item)=> item === active.id)
+        const overIndex: number | undefined = columnsList[columnIndex].tasks?.findIndex((item)=> item === over?.id)
+
+        if(activeIndex !== undefined && activeIndex > -1 && overIndex !== undefined && overIndex > -1){
+          const array = columnsList[columnIndex].tasks || []
+          const item = array[activeIndex];
+          array.splice(activeIndex, 1);
+          array.splice(overIndex, 0, item);
+          
+          editColumn(columnsList[columnIndex]._id, {tasks: array}, () => updateList() )
+        }
+      }
+      
+
     }
   }
   
@@ -55,8 +110,8 @@ export default function Projet({params}: {params: {id: string}}) {
         </div>
       </div>
       <div className="mx-auto h-full w-[80%] flex gap-5 mt-[20px] overflow-x-auto pb-5">
-        <SortableContext items={columnsIds} strategy={horizontalListSortingStrategy} >
-          {projectData?.columns?.map((item)=> <Column key={item._id} projectId={id} columnData={item} updateList={()=>updateList()} />)}
+        <SortableContext items={columnsIds}>
+          {projectData?.columns?.map((item)=> <Column key={item._id} projectId={id} tasksIds={tasksIds[item._id]} columnData={item} updateList={()=>updateList()} />)}
         </SortableContext>
       </div>
     </DndContext>

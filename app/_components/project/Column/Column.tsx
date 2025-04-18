@@ -7,10 +7,10 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import CreateEditColumnTaskModal from "../CreateEditColumnTaskModal";
 import { format } from "date-fns";
-import { useSortable } from "@dnd-kit/sortable";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import {CSS} from '@dnd-kit/utilities';
 
-export default function Column ({columnData, projectId, updateList}: {columnData: ColumnType<{populateTasks: true}>, projectId: string, updateList: ()=>void}) {
+export default function Column ({columnData, projectId,tasksIds, updateList}: {columnData: ColumnType<{populateTasks: true}>, projectId: string,tasksIds: string[], updateList: ()=>void}) {
   const [isModalOpen, setIsModalOpen] = useState<{isOpen: boolean, type?: 'COLUMN' | 'TASK'}>({isOpen: false})
   const {
     attributes,
@@ -45,7 +45,9 @@ export default function Column ({columnData, projectId, updateList}: {columnData
         <h4 className="font-semibold">Tâches</h4>
         <Button title="Ajouter une tâche" onClick={()=>setIsModalOpen({ isOpen: true, type:'TASK'})}><Plus width={20} height={20} /></Button>
       </span>
-      {columnData.tasks?.map((item:TaskType)=> <Task key={item._id} columnId={columnData._id} taskData={item} updateList={()=>updateList()} />)}
+        <SortableContext items={tasksIds}>
+          {columnData.tasks?.map((item:TaskType)=> <Task key={item._id} columnId={columnData._id} taskData={item} updateList={()=>updateList()} />)}
+        </SortableContext>
     </div>
   )
 }

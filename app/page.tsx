@@ -23,7 +23,7 @@ export default function Home() {
   }
 
   return (
-    <div className="px-[10%]">
+    <div className="px-[10%] min-h-[100vh]">
       {isProjectModalOpen && createPortal(<CreateEditProjectModal close={()=>setIsProjectModalOpen(false)} updateList={updateList} />, document.body)}
       <h1 className="text-7xl font-bold text-center py-[100px]">Accueil</h1>
       <section>

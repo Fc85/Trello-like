@@ -15,12 +15,12 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="en" className="min-h-[100vh] relative">
-        <body className="bg-gray-300 min-h-[100vh]">
+    <html lang="en">
+        <body className="bg-gray-300 min-h-[100vh] relative">
           <Header/>
           {children}
+          <Footer/>
         </body>
-        <Footer/>
     </html>
   );
 }
