@@ -79,7 +79,7 @@ export default function CreateEditColumnTaskModal ({type, close, parentId, data,
           <label>Couleur de la {type === "COLUMN" ? 'colonne' : type === 'TASK' && 'tâche'}</label>
           <span onClick={()=>setIsColorPickerOpen(!isColorPickerOpen)} style={{backgroundColor: color}} className="rounded-2xl border-1 border-black h-[20px] w-[20px]"/>
           {isColorPickerOpen && <SketchPicker
-            className="absolute translate-y-[50%] mt-2"
+            className="absolute translate-y-[75%] mt-2"
             color={ color }
             onChange={ (e)=> setColor(e.hex) } />}
           <Button className="mt-3" onClick={handleSubmit}>{data?._id  ? 'Modifier' : 'Créer'}</Button>
