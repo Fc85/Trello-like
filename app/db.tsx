@@ -15,6 +15,7 @@ export function getOneProject<TP extends {populateColumns: boolean} = {populateC
   if(matchingProject){
     if(projectOptions?.populateColumns){
       const columns = getColumns(columnOptions)
+      console.log(columns)
       const formattedColumns = matchingProject?.columns?.map((item:string)=> {
         const matchingColumn = columns.find((col: Column<TC>)=> col._id === item)
         
@@ -170,18 +171,27 @@ export function duplicateColumn(projectId: string, columnId: string, onFinish: (
   const project = getOneProject(projectId)
 
   if(project && matchingColumn){
+    const newColumnId = uuidv4()
+
     const newColumn: Column = {
       ...matchingColumn,
-      _id: uuidv4(),
+      _id: newColumnId,
       name: matchingColumn.name + ' - copie',
+      tasks: [],
     }
 
     columnsList.push(newColumn)
     window.localStorage.setItem('columns', JSON.stringify(columnsList))
 
     const newColumnsList: string[] = [...(project.columns || []), newColumn._id]
-    
-    editProject(projectId, {columns: newColumnsList}, ()=>onFinish())
+
+    editProject(projectId, {columns: newColumnsList})
+
+    for(let i = 0; i < (matchingColumn.tasks || []).length; i++){
+      duplicateTask(newColumnId, (matchingColumn.tasks || [])[i])
+    }
+
+    onFinish()
   }
 }
 

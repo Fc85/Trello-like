@@ -7,7 +7,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import CreateEditColumnTaskModal from "../CreateEditColumnTaskModal";
 import { format } from "date-fns";
-import { SortableContext, useSortable } from "@dnd-kit/sortable";
+import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import {CSS} from '@dnd-kit/utilities';
 
 export default function Column ({columnData, projectId,tasksIds, updateList}: {columnData: ColumnType<{populateTasks: true}>, projectId: string,tasksIds: string[], updateList: ()=>void}) {
@@ -45,7 +45,7 @@ export default function Column ({columnData, projectId,tasksIds, updateList}: {c
         <h4 className="font-semibold">Tâches</h4>
         <Button title="Ajouter une tâche" onClick={()=>setIsModalOpen({ isOpen: true, type:'TASK'})}><Plus width={20} height={20} /></Button>
       </span>
-        <SortableContext items={tasksIds}>
+        <SortableContext items={tasksIds} strategy={verticalListSortingStrategy}>
           {columnData.tasks?.map((item:TaskType)=> <Task key={item._id} columnId={columnData._id} taskData={item} updateList={()=>updateList()} />)}
         </SortableContext>
     </div>

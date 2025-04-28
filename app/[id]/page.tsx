@@ -6,11 +6,14 @@ import { useState, useEffect } from "react";
 import { Column, CreateEditColumnTaskModal } from "../_components/project";
 import { createPortal } from "react-dom";
 import { editColumn, editProject, getColumns, getOneProject } from "../db";
-import { SortableContext } from "@dnd-kit/sortable";
+import { horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
 
 type PopulatedProjects = Omit<Project<{populateColumns: true}>, "columns"> & {columns: ColumnType<{populateTasks: true}>[]}
-type dndOrigin = {type: "COLUMN" | "TASK" | null, parentId?: string}
+type dndOriginType = "COLUMN" | "TASK"
+type dndOrigin = {type: dndOriginType | null, parentId?: string}
+
 
 export default function Projet({params}: {params: {id: string}}) {
   const {id} = params
@@ -24,6 +27,7 @@ export default function Projet({params}: {params: {id: string}}) {
 
     if (newProjectData) {
       let newTasksIds = {}
+      
       setProjectData(newProjectData as unknown as PopulatedProjects)
   
       // Définition de l'id des columns
@@ -57,10 +61,10 @@ export default function Projet({params}: {params: {id: string}}) {
   }
 
   const onDragEnd = ({active, over}: DragEndEvent) => {
-    console.log(active)
     const activeOrigin: dndOrigin = getOrigin(active.id as string)
     const overOrigin: dndOrigin = getOrigin(over?.id as string)
     
+    // DnD des colonnes
     if(activeOrigin.type === 'COLUMN' && overOrigin.type === 'COLUMN'){
       const activeIndex: number | undefined = projectData?.columns.findIndex((item: ColumnType<{populateTasks: true}>)=> item._id === active.id)
       const overIndex: number | undefined = projectData?.columns.findIndex((item: ColumnType<{populateTasks: true}>)=> item._id === over?.id)
@@ -75,6 +79,7 @@ export default function Projet({params}: {params: {id: string}}) {
       }
     }
 
+    // DnD des tâches
     if(activeOrigin.type === 'TASK' && overOrigin.type === 'TASK' && activeOrigin.parentId === overOrigin.parentId){
       const columnsList = getColumns()
       const columnIndex = columnsList.findIndex((item)=> item._id === activeOrigin.parentId)
@@ -110,7 +115,7 @@ export default function Projet({params}: {params: {id: string}}) {
         </div>
       </div>
       <div className="mx-auto h-full w-[80%] flex gap-5 mt-[20px] overflow-x-auto pb-5">
-        <SortableContext items={columnsIds}>
+        <SortableContext items={columnsIds} strategy={horizontalListSortingStrategy}>
           {projectData?.columns?.map((item)=> <Column key={item._id} projectId={id} tasksIds={tasksIds[item._id]} columnData={item} updateList={()=>updateList()} />)}
         </SortableContext>
       </div>
